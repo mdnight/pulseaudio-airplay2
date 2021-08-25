@@ -1,17 +1,23 @@
-name: Airplay module push
+name: CI
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
+  Build:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
+      - name: Checkout
         uses: actions/checkout@v2
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
+        with:
+          ref: ${{ github.ref }}
+      - name: Installing dependencies
         run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+          sudo apt-get -y install pulseaudio libpulse-dev gcc meson ninja-build tdb-tools libtdb-dev libsndfile-dev check doxygen libavahi-client-dev
+      - name: Clonning pulseaudio repository
+        run: git clone https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git
+      - name: Configuring Pulseaudio (meson)
+        run: meson build pulseaudio
+      - name: Configuring Pulseaudio (ninja)
+        run: ninja -C build
+      - name: Copying config.h
+        run: cp ./build/config.h ./src/
+      - name: Compiling
+        run: gcc -g -shared  -fPIC -I $PWD/pulseaudio/src -o module-airplay-discover.so ./src/module-airplay-discover.c
