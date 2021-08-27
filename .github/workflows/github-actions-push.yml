@@ -21,3 +21,9 @@ jobs:
         run: cp ./build/config.h ./src/
       - name: Compiling
         run: gcc -g -shared  -fPIC -I $PWD/pulseaudio/src -o module-airplay-discover.so ./src/module-airplay-discover.c
+      - name: Creating artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: module-airplay-so
+          path: |
+            module-airplay-discover.so
