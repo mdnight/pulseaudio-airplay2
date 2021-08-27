@@ -28,6 +28,7 @@ jobs:
           path: |
             module-airplay-discover.so
   Success:
+    needs: Build
     if: ${{ needs.Build.result == 'success' && github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     steps:
