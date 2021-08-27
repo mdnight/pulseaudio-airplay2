@@ -1,4 +1,4 @@
-name: Action push
+name: CI
 on: [push]
 jobs:
   Build:
@@ -27,3 +27,9 @@ jobs:
           name: module-airplay-so
           path: |
             module-airplay-discover.so
+  Success:
+    if: ${{ needs.Build.result == 'success' && github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Success
+        run: echo "Success!!!!"
